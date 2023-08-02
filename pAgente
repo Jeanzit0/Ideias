@@ -1,0 +1,31 @@
+const prompt = require('prompt-sync')();
+
+let SaldoAtual = 0;
+
+const connection = mysql.createConnection({
+  host: 'localhost',
+  user: 'jean',
+  password: '061165Jean2003.',
+  database: 'controle_de_salario'
+});
+
+console.log('----------------------\n|| Próximo destino? ||\n----------------------')
+  console.log('<(1) BANCO (1)>')
+  let escolhaMenu = Number (prompt ('<(0) O VAZIO (0)>'))
+  
+  if(escolhaMenu == 1){
+
+    console.log ('(: D) --> (Bem vindo ao banco, no que posso te ajudar?)\n')
+    console.log ('<(1) Registrar novo saldo ou conferir saldo atual (1)>')
+    let escolhaMenuBanco ('<(0) Isso foi um erro! (0)>')
+
+    let respSaldoNovo = Number (prompt ('Qual quantia? '))
+    saldoAtual += respSaldoNovo
+    
+    console.log(`\nSeu saldo atual é de: ${saldoAtual}\n`)
+    let sql = 'INSERT INTO controle (saldoAtual, data_hora)(?, CURRENT_TIMESTAMP)';
+    let values = [saldoAtual];
+  }
+
+
+
