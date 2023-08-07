@@ -1,31 +1,58 @@
 const prompt = require('prompt-sync')();
-
-let SaldoAtual = 0;
+const mysql = require('mysql2');
 
 const connection = mysql.createConnection({
   host: 'localhost',
-  user: 'jean',
+  user: 'root',
   password: '061165Jean2003.',
-  database: 'controle_de_salario'
+  database: 'controledegastos'
 });
 
-console.log('----------------------\n|| Próximo destino? ||\n----------------------')
-  console.log('<(1) BANCO (1)>')
-  let escolhaMenu = Number (prompt ('<(0) O VAZIO (0)>'))
+let saldoAtual = 0;
+
+console.log('----------------------\n|| Próximo destino? ||\n----------------------');
+console.log('<(1) BANCO (1)>');
+let escolhaMenu = Number(prompt('<(0) O VAZIO (0)>'));
   
-  if(escolhaMenu == 1){
+if (escolhaMenu == 1) {
+  console.log('(: D) --> (Bem vindo ao banco, no que posso te ajudar?)\n');
+  console.log('<(1) Registrar novo saldo ou conferir saldo atual (1)>');
+  let escolhaMenuBanco = Number(prompt('<(0) Isso foi um erro! (0)>'));
 
-    console.log ('(: D) --> (Bem vindo ao banco, no que posso te ajudar?)\n')
-    console.log ('<(1) Registrar novo saldo ou conferir saldo atual (1)>')
-    let escolhaMenuBanco ('<(0) Isso foi um erro! (0)>')
+  if (escolhaMenuBanco == 1) {
+    let respSaldoNovo = Number(prompt('Qual quantia? '));
 
-    let respSaldoNovo = Number (prompt ('Qual quantia? '))
-    saldoAtual += respSaldoNovo
-    
-    console.log(`\nSeu saldo atual é de: ${saldoAtual}\n`)
-    let sql = 'INSERT INTO controle (saldoAtual, data_hora)(?, CURRENT_TIMESTAMP)';
-    let values = [saldoAtual];
+    // Recupera o saldo atual do banco de dados
+    connection.query('SELECT saldoAtual FROM controledesalario', (err, results) => {
+      if (err) {
+        console.error('Erro ao recuperar o saldo atual:', err);
+        return;
+      }
+
+      saldoAtual = results[0]?.saldoAtual || 0;
+
+      // Atualiza o saldo atual com o valor fornecido
+      saldoAtual += respSaldoNovo;
+
+      console.log(`\nSeu saldo atual é de: ${saldoAtual}\n`);
+
+      // Atualiza o valor no banco de dados
+      connection.query('UPDATE controledesalario SET saldoAtual = ? WHERE id = 1', [saldoAtual], (err) => {
+        if (err) {
+          console.error('Erro ao atualizar o saldo no banco de dados:', err);
+        } else {
+          console.log('Saldo atualizado com sucesso!');
+        }
+      });
+    });
   }
+} else if (escolhaMenu == 0) {
+  console.log('\nAté mais viajante!');
+}
 
-
-
+// banco de dados:
+// controledegastos (database)
+// controledesalario (table)
+//   | saldoAtual | bigint   | YES  |     | NULL    |                |
+//   | datahora   | datetime | YES  |     | NULL    |                |
+//   | id         | int      | NO   | PRI | NULL    | auto_increment |
