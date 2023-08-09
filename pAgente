@@ -9,6 +9,7 @@ const connection = mysql.createConnection({
 });
 
 let saldoAtual = 0;
+let credDebDinTxt = '';
 
 console.log('----------------------\n|| Próximo destino? ||\n----------------------');
 console.log('<(1) BANCO (1)>');
@@ -49,11 +50,21 @@ if (escolhaMenu == 1) {
       let item = prompt('Qual produto você comprou?');
       let qntd = prompt('Qual a quantidade?');
       let preco = prompt('Qual o valor do produto você comprou?');
-      let credDebDin = prompt('Foi no (1) crédito / (2) débito / (3) dinheiro');
+      let credDebDin = Number (prompt('Foi no (1) crédito / (2) débito / (3) dinheiro'));
       let onde = prompt('Onde você comprou?');
       let obs = prompt('Obervações?');
 
 
+      if(credDebDin == 1){
+        credDebDinTxt == 'Crédito';
+      }else if(credDebDin == 2){
+        credDebDinTxt == 'Débito';
+      }else{ 
+        credDebDinTxt == 'Dinheiro';
+      }
+
+      let sql = 'INSERT INTO protocol (nome, quantidade, preco, credDebDin, onde, obs, data_hora) VALUES (?,?, ?, ?, ?, CURRENT_TIMESTAMP)';
+      let values = [item, qntd, preco, credDebDinTxt, onde, obs];
 
 } else if (escolhaMenu == 0) {
   console.log('\nAté mais viajante!');
@@ -74,14 +85,16 @@ if (escolhaMenu == 1) {
 // registrodecompra (table)
 //     | 
 //     |
-//     |  create table registrodecompra(
-//       -> id INT AUTO_INCREMENT PRIMARY KEY,
-//       -> nome VARCHAR(75)
-//       -> quantidade INT
-//       -> nome VARCHAR(75),
-//       -> quantidade INT,
-//       -> preco BIGINT,
-//       -> onde VARCHAR(75),
-//       -> obs VARCHAR(300)
-//       -> );
+// create table registrodecompra(
+// id INT AUTO_INCREMENT PRIMARY KEY,
+// nome VARCHAR(75)
+// quantidade INT
+// nome VARCHAR(75),
+// quantidade INT,
+// preco BIGINT,
+// onde VARCHAR(75),
+// obs VARCHAR(300),
+// credDebDin VARCHAR (10),
+// data_hora DATETIME
+// );
   
