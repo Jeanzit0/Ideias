@@ -10,6 +10,8 @@ const connection = mysql.createConnection({
 
 let saldoAtual = 0;
 let credDebDinTxt = '';
+let saldoPosCompra = 0;
+let saldoCredito = 0;
 
 console.log('----------------------\n|| Próximo destino? ||\n----------------------');
 console.log('<(1) BANCO (1)>');
@@ -19,6 +21,7 @@ if (escolhaMenu == 1) {
   console.log('(: D) --> (Bem vindo ao banco, no que posso te ajudar?)\n');
   console.log('<(1) Registrar/conferir saldo atual (1)>');
   console.log('<(2)Registrar nova compra(2)>')
+
   let escolhaMenuBanco = Number(prompt('<(0) Isso foi um erro! (0)>'));
 
   if (escolhaMenuBanco == 1) {
@@ -30,23 +33,38 @@ if (escolhaMenu == 1) {
         console.error('Erro ao recuperar o saldo atual:', err);
         return;
       }
-
+    
       saldoAtual = results[0]?.saldoAtual || 0;
-
+    
       saldoAtual += respSaldoNovo;
-
-      console.log(`\nSeu saldo atual é de: ${saldoAtual}\n`);
-
-      connection.query('UPDATE controledesalario SET saldoAtual = ? WHERE id = 1', [saldoAtual], (err) => {
+    
+      connection.query('UPDATE controledesalario SET saldoCredito = ? WHERE id = 1 ', [saldoCredito], (err) => {
         if (err) {
           console.error('Erro ao atualizar o saldo no banco de dados:', err);
         } else {
           console.log('Saldo atualizado com sucesso!');
         }
-      });
-    });
-  }
-}else if(escolhaMenuBanco == 2){
+
+      console.log(`\nSeu saldo de débito atual é de: ${saldoAtual}\n`);
+      console.log(`Seu saldo em cŕedito atual é de: ${saldoCredito}`)
+    let credRenov = Number (prompt('Seu crédito renovou/aumentou/diminuiu? (1 - sim, aumentou) (2 - sim, renovou) (3 - sim, diminuiu) (4 - não)'))
+          
+            });
+            if(credRenov == 1){
+              let aumentoCred = Number (prompt("De quanto foi o aumento?"))
+              saldoCredito += aumentoCred;
+              connection.query('UPDATE controledesalario SET saldoCredito = ? WHERE id = 1', [saldoCredito], (err) => {
+                if (err) {
+                  console.error('Erro ao atualizar o saldo no banco de dados:', err);
+                } else {
+                  console.log('Saldo atualizado com sucesso!');
+                }
+              console.log(`Seu novo saldo de crédito atual é de: ${saldoCredito}`)
+              });
+            } 
+          });
+        }
+ } else if(escolhaMenuBanco == 2){
       let item = prompt('Qual produto você comprou?');
       let qntd = prompt('Qual a quantidade?');
       let preco = prompt('Qual o valor do produto você comprou?');
@@ -57,8 +75,19 @@ if (escolhaMenu == 1) {
 
       if(credDebDin == 1){
         credDebDinTxt == 'Crédito';
+
+
       }else if(credDebDin == 2){
         credDebDinTxt == 'Débito';
+        saldoPosCompra = saldoAtual - preco;
+        connection.query('UPDATE controledesalario SET saldoAtual = ? WHERE id = 1', [saldoAtual], (err) => {
+          if (err) {
+            console.error('Erro ao atualizar o saldo no banco de dados:', err);
+          } else {
+            console.log('Saldo atualizado com sucesso!');
+          }
+        });
+
       }else{ 
         credDebDinTxt == 'Dinheiro';
       }
@@ -66,35 +95,40 @@ if (escolhaMenu == 1) {
       let sql = 'INSERT INTO protocol (nome, quantidade, preco, credDebDin, onde, obs, data_hora) VALUES (?,?, ?, ?, ?, CURRENT_TIMESTAMP)';
       let values = [item, qntd, preco, credDebDinTxt, onde, obs];
 
+      
+
 } else if (escolhaMenu == 0) {
   console.log('\nAté mais viajante!');
 }
 
 
-
+/////////// TABELAS DO BANCO DE DADOS /////////////
+//________________________________________________________________________________________\\
 // banco de dados:
 // controledegastos (database)
 // controledesalario (table)
-//   | saldoAtual | bigint   | YES  |     | NULL    |                |
+
+
+//   | saldoAtual | bigint   | YES  |     | NULL    |                | (atualizar o valor)
 //   | datahora   | datetime | YES  |     | NULL    |                |
 //   | id         | int      | NO   | PRI | NULL    | auto_increment |
+//   | saldoCredito |int     | YES  |     | NULL    |                | (atualizar o valor)
+//________________________________________________________________________________________//
 
-
-/////////// CRIAR TABELA /////////////
+//________________________________________________________________________________________\\
 // controledegastos (database)
 // registrodecompra (table)
-//     | 
-//     |
+//   
+//  
 // create table registrodecompra(
 // id INT AUTO_INCREMENT PRIMARY KEY,
-// nome VARCHAR(75)
-// quantidade INT
 // nome VARCHAR(75),
 // quantidade INT,
 // preco BIGINT,
 // onde VARCHAR(75),
 // obs VARCHAR(300),
 // credDebDin VARCHAR (10),
-// data_hora DATETIME
+// data_hora DATETIME,
 // );
+//________________________________________________________________________________________//
   
