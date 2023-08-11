@@ -63,7 +63,32 @@ if (escolhaMenu == 1) {
               });
             } 
           });
-        }
+            }else if(credRenov == 2){ 
+              saldoCredito == 300;
+              console.log (`Saldo renovado para: ${saldoCredito}`)
+              connection.query('UPDATE controledesalario SET saldoCredito = ? WHERE id = 1', [saldoCredito], (err) => {
+                if (err) {
+                  console.error('Erro ao atualizar o saldo no banco de dados:', err);
+                } else {
+                  console.log('Saldo atualizado com sucesso!');
+                }
+              console.log(`Seu novo saldo de crédito atual é de: ${saldoCredito}`)
+              });
+            }else if(credRenov == 3){
+            let descontoCred = Number (prompt("De quanto foi o desconto?"))
+            saldoCredito -= aumentoCred;
+            connection.query('UPDATE controledesalario SET saldoCredito = ? WHERE id = 1', [saldoCredito], (err) => {
+              if (err) {
+                console.error('Erro ao atualizar o saldo no banco de dados:', err);
+              } else {
+                console.log('Saldo atualizado com sucesso!');
+              }
+            console.log(`Seu novo saldo de crédito atual é de: ${saldoCredito}`)
+            });
+          }else if(credRenov == 4){
+            console.log(`Seu saldo crédito atual é: ${saldoCredito}`)
+          }
+
  } else if(escolhaMenuBanco == 2){
       let item = prompt('Qual produto você comprou?');
       let qntd = prompt('Qual a quantidade?');
