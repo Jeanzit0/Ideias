@@ -12,6 +12,7 @@ let saldoAtual = 0;
 let credDebDinTxt = '';
 let saldoPosCompra = 0;
 let saldoCredito = 0;
+let valorTotalNota = [];
 
 console.log('----------------------\n|| Próximo destino? ||\n----------------------');
 console.log('<(1) BANCO (1)>');
@@ -20,7 +21,7 @@ let escolhaMenu = Number(prompt('<(0) O VAZIO (0)>'));
 if (escolhaMenu == 1) {
   console.log('(: D) --> (Bem vindo ao banco, no que posso te ajudar?)\n');
   console.log('<(1) Registrar/conferir saldo atual (1)>');
-  console.log('<(2)Registrar nova compra(2)>')
+  console.log('<(2) Registrar nova compra (2)>')
 
   let escolhaMenuBanco = Number(prompt('<(0) Isso foi um erro! (0)>'));
 
@@ -90,6 +91,41 @@ if (escolhaMenu == 1) {
           }
 
  } else if(escolhaMenuBanco == 2){
+
+  let escolhaMenuBancoPerg = Number (prompt ("Deseja criar uma nota fiscal? (1) - sim (2) - não"))
+  
+  if(escolhaMenuBancoPerg == 1){
+      let tamTotalNota = Number (prompt("Quantos itens com 'nomes diferentes' você comprou nessa nota? "))
+      let ondeNota = prompt ('Onde fez a compra? ')
+      
+      for (k=0; k<tamTotalNota; k++){
+        let itemNota = prompt ('Qual o nome do item? ');
+        let qntdNota = Number (prompt ('Quantos? '));
+        let precoNota = Number (prompt ('Qual o custo da unidade? '));
+        let credDebDin = Number (prompt('Foi no (1) crédito / (2) débito / (3) dinheiro'));
+          if(credDebDin == 1){
+            credDebDinTxt == 'Crédito';
+          }else if(credDebDin == 2){
+            credDebDinTxt == 'Débito';
+            saldoPosCompra = saldoAtual - preco;
+            connection.query('UPDATE controledesalario SET saldoAtual = ? WHERE id = 1', [saldoAtual], (err) => {
+              if (err) {
+                console.error('Erro ao atualizar o saldo no banco de dados:', err);
+              } else {
+                console.log('Saldo atualizado com sucesso!');
+              }
+            });
+        valorTotalNota[k]=precoNota*qntdNota;
+          
+          }else{ 
+            credDebDinTxt == 'Dinheiro';
+          }
+          let sql = 'INSERT INTO protocol (nome, quantidade, preco, credDebDin, onde, obs, data_hora) VALUES (?,?, ?, ?, ?, CURRENT_TIMESTAMP)';
+          let values = [item, qntd, preco, credDebDinTxt, onde, obs];
+        }
+      }
+
+  }else if (escolhaMenuBancoPerg == 2){
       let item = prompt('Qual produto você comprou?');
       let qntd = prompt('Qual a quantidade?');
       let preco = prompt('Qual o valor do produto você comprou?');
@@ -119,12 +155,11 @@ if (escolhaMenu == 1) {
 
       let sql = 'INSERT INTO protocol (nome, quantidade, preco, credDebDin, onde, obs, data_hora) VALUES (?,?, ?, ?, ?, CURRENT_TIMESTAMP)';
       let values = [item, qntd, preco, credDebDinTxt, onde, obs];
-
-      
-
-} else if (escolhaMenu == 0) {
+    }
+     else if (escolhaMenu == 0) {
   console.log('\nAté mais viajante!');
 }
+
 
 
 /////////// TABELAS DO BANCO DE DADOS /////////////
@@ -157,3 +192,13 @@ if (escolhaMenu == 1) {
 // );
 //________________________________________________________________________________________//
   
+//________________________________________________________________________________________//
+// notasfiscais (database)
+// nota (tabela)
+
+// itemNota varchar (100)
+// qntdNota int
+// precoNota bigint
+// ondeNota varchar (100)
+// data_hora datetime
+//________________________________________________________________________________________//
